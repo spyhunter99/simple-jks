@@ -1,14 +1,10 @@
 package com.github.spyhunter99.simplejks;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import sun.security.x509.*;
 import java.security.cert.*;
 import java.security.*;
 import java.util.Date;
 import java.io.FileOutputStream;
-import sun.misc.BASE64Encoder;
-import sun.security.provider.X509Factory;
 import sun.security.tools.keytool.CertAndKeyGen;
 
 /**
