@@ -12,3 +12,4 @@ install:
 #build
 script:
   - mvn install
+ 
