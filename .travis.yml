@@ -1,0 +1,14 @@
+language: java
+jdk: 
+ - oraclejdk7
+ - oraclejdk8
+ - openjdk7
+
+
+matrix:
+
+install:
+  - 
+#build
+script:
+  - mvn install
