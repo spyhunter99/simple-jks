@@ -14,17 +14,18 @@ import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.Provider;
-import java.security.PublicKey;
 import java.security.cert.Certificate;
-import java.security.SecureRandom;
 import java.security.Security;
 import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.Date;
+import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.BasicConstraints;
+import org.bouncycastle.asn1.x509.GeneralName;
+import org.bouncycastle.asn1.x509.X509Extension;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -36,21 +37,20 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
  *
  * @author AO
  */
-public class CerGenBouncy {
+public class CertGenBouncy {
 
     public static void main(String[] args) throws Exception {
         KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
         keyGen.initialize(1024);
         KeyPair pair = keyGen.generateKeyPair();
         PrivateKey privKey = pair.getPrivate();
-         
+
         String alias = "server";
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(null, "pass".toCharArray());
 
-        
         Certificate[] chain = new Certificate[1];
-        chain[0] =  selfSign(pair, "Dn=localhost,O=test");
+        chain[0] = selfSign(pair, "Dn=localhost,O=test");
 
         keyStore.setKeyEntry(alias, privKey, "keypass".toCharArray(), chain);
 
@@ -90,6 +90,14 @@ public class CerGenBouncy {
         BasicConstraints basicConstraints = new BasicConstraints(true); // <-- true for CA, false for EndEntity
 
         certBuilder.addExtension(new ASN1ObjectIdentifier("2.5.29.19"), true, basicConstraints); // Basic Constraints is usually marked as critical.
+     
+        ASN1Encodable[] subjectAlternativeNames = new ASN1Encodable[]{
+            new GeneralName(GeneralName.dNSName, "server"),
+            new GeneralName(GeneralName.dNSName, "server.mydomain.com")
+        };
+        DERSequence subjectAlternativeNamesExtension = new DERSequence(subjectAlternativeNames);
+        certBuilder.addExtension(X509Extension.subjectAlternativeName,
+                false, subjectAlternativeNamesExtension);
 
         // -------------------------------------
         return new JcaX509CertificateConverter().setProvider(bcProvider).getCertificate(certBuilder.build(contentSigner));
