@@ -44,7 +44,7 @@ public class MainTest {
     public void testMain() throws Exception {
         System.out.println("main");
         String[] args = null;
-      CerGenBouncy.main(null);
+      CertGenBouncy.main(null);
       
     }
 
